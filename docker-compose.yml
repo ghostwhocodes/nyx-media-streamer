@@ -1,0 +1,16 @@
+services:
+  nyx:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./media:/media:ro
+      - nyx-data:/home/nyx/data
+    environment:
+      NYX_HOST: "0.0.0.0"
+      NYX_PORT: "8080"
+      NYX_MEDIA_ROOT: "/media"
+      NYX_DATABASE_DIR: "/home/nyx/data/db"
+
+volumes:
+  nyx-data:

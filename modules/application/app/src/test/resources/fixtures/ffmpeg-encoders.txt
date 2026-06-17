@@ -1,0 +1,23 @@
+ V..... = Video
+ A..... = Audio
+ S..... = Subtitle
+ .F.... = Frame-level multithreading
+ ..S... = Slice-level multithreading
+ ...X.. = Codec is experimental
+ ....B. = Supports draw_horiz_band
+ .....D = Supports direct rendering method 1
+ ------
+ V....D libx264              libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (codec h264)
+ V....D libx264rgb           libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 RGB (codec h264)
+ V....D libx265              libx265 H.265 / HEVC (codec hevc)
+ V....D libsvtav1            SVT-AV1(Scalable Video Technology for AV1) encoder (codec av1)
+ V..... h264_nvenc           NVIDIA NVENC H.264 encoder (codec h264)
+ V..... hevc_nvenc           NVIDIA NVENC hevc encoder (codec hevc)
+ V..... h264_vaapi           H.264/AVC (VAAPI) (codec h264)
+ V..... hevc_vaapi           H.265/HEVC (VAAPI) (codec hevc)
+ V..... h264_qsv             H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (Intel Quick Sync Video acceleration) (codec h264)
+ A....D libopus              libopus Opus (codec opus)
+ A....D aac                  AAC (Advanced Audio Coding) (codec aac)
+ A....D libmp3lame           libmp3lame MP3 (MPEG audio layer 3) (codec mp3)
+ S..... webvtt               WebVTT subtitle (codec webvtt)
+ S..... srt                  SubRip subtitle (codec subrip)

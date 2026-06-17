@@ -1,0 +1,282 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Nyx Media Streamer API",
+    "version": "1.0.0",
+    "description": "Adaptive media server: transcoding, images, audio, eForms"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "description": "Runtime health status"
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "responses": {},
+        "description": "OpenAPI specification"
+      }
+    },
+    "/api/v1/client/capabilities": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "description": "Client discovery contract for mobile and compatibility integrations"
+      }
+    },
+    "/api/v1/browse": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid sort or path parameter"
+          }
+        },
+        "description": "Browse a directory of media files",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": false,
+            "description": "Virtual path to browse (empty for root)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dir",
+            "in": "query",
+            "required": false,
+            "description": "Alias for path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number (0-based)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Items per page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort order: name, date, size",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/search/files": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Missing query parameter"
+          }
+        },
+        "description": "Search for files across all media roots",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "description": "Search query string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number (0-based)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Items per page",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/images/thumb": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "JPEG thumbnail bytes"
+          },
+          "400": {
+            "description": "Missing or invalid path/size parameter"
+          },
+          "404": {
+            "description": "Image not found"
+          },
+          "503": {
+            "description": "FFmpeg not available"
+          }
+        },
+        "description": "Get a thumbnail for an image file",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "description": "Virtual path to the image file",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": true,
+            "description": "Thumbnail size in pixels (square)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/images/file": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Image bytes with EXIF stripped"
+          },
+          "304": {
+            "description": "Not modified (ETag match)"
+          },
+          "400": {
+            "description": "Missing path parameter"
+          },
+          "404": {
+            "description": "Image not found or path is not an image"
+          }
+        },
+        "description": "Serve an image file with EXIF metadata stripped for privacy",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "description": "Virtual path to the image file",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/audio/file": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Audio bytes (original or transcoded)"
+          },
+          "400": {
+            "description": "Missing path parameter or not an audio file"
+          },
+          "404": {
+            "description": "Audio file not found"
+          },
+          "503": {
+            "description": "FFmpeg not available for transcoding"
+          }
+        },
+        "description": "Stream an audio file with content negotiation (serves original or transcodes on-the-fly)",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "description": "Virtual path to the audio file",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "description": "Preferred MIME type for content negotiation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/stream.m3u8": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "HLS master playlist (m3u8)"
+          },
+          "202": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid path or quality parameter"
+          }
+        },
+        "description": "Open an HLS playback session from a media path and return the master playlist when ready",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "description": "Virtual path to the media file",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quality",
+            "in": "query",
+            "required": false,
+            "description": "Quality preset: high, low, medium, or passthrough",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

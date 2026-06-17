@@ -1,0 +1,107 @@
+package com.nyx;
+
+import com.nyx.admin.BackupService;
+import com.nyx.admin.HealthService;
+import com.nyx.admin.MetricsService;
+import com.nyx.browse.BrowseService;
+import com.nyx.common.HealthMonitor;
+import com.nyx.common.PathSecurity;
+import com.nyx.common.QuotaService;
+import com.nyx.common.VirtualPathResolver;
+import com.nyx.config.ConfigService;
+import com.nyx.config.ServerConfig;
+import com.nyx.eforms.EFormService;
+import com.nyx.eforms.ExportImportService;
+import com.nyx.eforms.RelocationService;
+import com.nyx.ffmpeg.MediaProber;
+import com.nyx.ffmpeg.SubtitleExtractor;
+import com.nyx.media.AudioTranscoder;
+import com.nyx.media.ChapterService;
+import com.nyx.media.ExifExtractor;
+import com.nyx.media.ImageTransformService;
+import com.nyx.media.LibraryAdminService;
+import com.nyx.media.LibraryCatalogService;
+import com.nyx.media.LibraryScanService;
+import com.nyx.media.LibraryService;
+import com.nyx.media.LibraryUserStateService;
+import com.nyx.media.MediaFileService;
+import com.nyx.media.MediaObjectResolver;
+import com.nyx.media.MediaObjectService;
+import com.nyx.media.MediaThumbnailLifecycle;
+import com.nyx.media.MediaThumbnailService;
+import com.nyx.media.PlaylistService;
+import com.nyx.media.StrippedImageCache;
+import com.nyx.media.ThumbnailService;
+import com.nyx.media.UserMediaStateService;
+import com.nyx.media.VideoPreviewService;
+import com.nyx.media.VideoTrickplayService;
+import com.nyx.playback.contracts.AudioNegotiationService;
+import com.nyx.playback.contracts.AudioSessionService;
+import com.nyx.playback.contracts.MediaSessionReportService;
+import com.nyx.playback.contracts.PlaybackDeliveryService;
+import com.nyx.playback.contracts.PlaybackDecisionService;
+import com.nyx.playback.contracts.PlaybackSessionService;
+import com.nyx.transcode.contracts.SegmentCacheService;
+import com.nyx.transcode.contracts.TranscodeApplicationService;
+import com.nyx.transcode.contracts.webhook.WebhookStore;
+import com.nyx.transcode.contracts.webhook.WebhookUrlValidator;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import javax.sql.DataSource;
+
+record DomainRouteDependencies(
+    BrowseService browseService,
+    PlaybackSessionService playbackSessionService,
+    PlaybackDecisionService playbackDecisionService,
+    PlaybackDeliveryService playbackDeliveryService,
+    MediaSessionReportService mediaSessionReportService,
+    PathSecurity pathSecurity,
+    VirtualPathResolver virtualPathResolver,
+    ServerConfig serverConfig,
+    ConcurrentHashMap<String, String> runtimeUsers,
+    ScheduledExecutorService cleanupScheduler,
+    List<String> authProviders,
+    QuotaService quotaService,
+    MediaObjectResolver mediaObjectResolver,
+    TranscodeApplicationService transcodeService,
+    SegmentCacheService segmentCache,
+    MediaProber probeService,
+    SubtitleExtractor subtitleExtractor,
+    HealthMonitor healthMonitor,
+    EFormService eformService,
+    ExportImportService exportImportService,
+    RelocationService relocationService,
+    MediaFileService mediaFileService,
+    ThumbnailService thumbnailService,
+    ExifExtractor exifExtractor,
+    StrippedImageCache strippedImageCache,
+    ImageTransformService imageTransformService,
+    VideoPreviewService videoPreviewService,
+    VideoTrickplayService videoTrickplayService,
+    MediaThumbnailService mediaThumbnailService,
+    MediaThumbnailLifecycle mediaThumbnailLifecycle,
+    LibraryService libraryService,
+    LibraryCatalogService libraryCatalogService,
+    LibraryUserStateService libraryUserStateService,
+    MediaObjectService mediaObjectService,
+    UserMediaStateService userMediaStateService,
+    ChapterService chapterService,
+    AudioTranscoder audioTranscoder,
+    AudioNegotiationService audioNegotiationService,
+    AudioSessionService audioSessionService,
+    PlaylistService playlistService,
+    ConfigService configService,
+    WebhookStore webhookStore,
+    WebhookUrlValidator webhookUrlValidator,
+    MetricsService metricsService,
+    BackupService backupService,
+    Map<String, DataSource> databases,
+    List<Path> mediaRoots,
+    LibraryScanService libraryScanService,
+    LibraryAdminService libraryAdminService,
+    String storageBackendType
+) {
+}

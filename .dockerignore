@@ -1,0 +1,14 @@
+.git
+.gradle
+.idea
+build
+target
+**/target
+.local-maven-repo
+.codex
+.loki
+node_modules
+utils
+*.iml
+.claude
+docs

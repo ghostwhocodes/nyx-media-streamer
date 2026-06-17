@@ -1,0 +1,36 @@
+# Dockerfile.test — cleanroom test environment.
+# The image contains JDK 25, ffmpeg, and the project source with pre-fetched
+# dependencies. Tests run at container start via ENTRYPOINT, not during build,
+# so Docker layer caching never skips them.
+#
+# Tests run as a non-root user so POSIX file-permission tests work correctly
+# (root bypasses permission checks, which would cause false passes/failures).
+#
+# Usage: ./docker-test.sh  (or: docker build + docker run — see script)
+FROM eclipse-temurin:25-jdk
+
+LABEL org.opencontainers.image.licenses="AGPL-3.0-only" \
+      org.opencontainers.image.vendor="Nos Doughty" \
+      org.opencontainers.image.authors="Nos Doughty"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --shell /bin/bash testuser
+
+WORKDIR /build
+RUN chown testuser:testuser /build
+
+COPY --chown=testuser:testuser . .
+
+RUN chmod +x mvnw
+
+USER testuser
+
+# Pre-fetch Maven wrapper + dependencies so they're baked into the image.
+# Actual test execution happens at `docker run` time, not here.
+RUN ./mvnw -q -DskipTests dependency:go-offline > /dev/null 2>&1 || true
+
+ENTRYPOINT ["./mvnw"]
+CMD ["test"]

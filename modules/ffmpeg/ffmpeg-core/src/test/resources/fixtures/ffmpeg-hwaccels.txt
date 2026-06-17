@@ -1,0 +1,7 @@
+Hardware acceleration methods:
+vdpau
+cuda
+vaapi
+drm
+opencl
+vulkan

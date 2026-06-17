@@ -1,0 +1,65 @@
+name: Nightly Load Tests
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 02:00 UTC every night
+  workflow_dispatch:        # allow manual trigger
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install K6
+        run: |
+          sudo apt-get install -y gnupg
+          curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/k6.gpg
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update && sudo apt-get install -y k6
+
+      - name: Build distribution
+        run: ./codex/mvnw.sh -pl :app -am -DskipTests package
+
+      - name: Start Nyx server
+        run: |
+          mkdir -p /tmp/nyx-media /tmp/nyx-data
+          NYX_MEDIA_ROOT=/tmp/nyx-media NYX_DATABASE_DIR=/tmp/nyx-data \
+          ./modules/application/app/target/app/bin/app &
+          echo $! > /tmp/nyx.pid
+          for i in {1..30}; do
+            wget -qO- http://localhost:8080/api/v1/health/live > /dev/null 2>&1 && exit 0
+            sleep 1
+          done
+          echo "Nyx server did not become healthy within 30 seconds" >&2
+          exit 1
+
+      - name: K6 — audio listing
+        run: k6 run --out json=/tmp/k6-audio.json perf/k6/audio.js
+
+      - name: K6 — image listing
+        run: k6 run --out json=/tmp/k6-thumbnails.json perf/k6/thumbnails.js
+
+      - name: K6 — transcode job listing
+        run: k6 run --out json=/tmp/k6-transcode.json perf/k6/transcode.js
+
+      - name: Stop server
+        if: always()
+        run: kill $(cat /tmp/nyx.pid) 2>/dev/null || true
+
+      - name: Upload K6 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-results-${{ github.run_id }}
+          path: /tmp/k6-*.json
+          retention-days: 30
