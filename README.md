@@ -1,5 +1,13 @@
 # Nyx Media Streamer
 
+<p align="center">
+  <img src="./.github/assets/banner.webp" alt="Nyx Media Streamer banner">
+</p>
+
+<p align="center">
+  <a href="https://ghost-who-codes.blog/open-source/nyx-media-streamer/">Project page on Ghost Who Codes</a>
+</p>
+
 ## Overview
 Nyx Media Streamer is a self-hosted media backend for path-safe browsing, typed libraries, negotiated playback, image and audio delivery, local metadata control, a simple admin UI, and legacy-client compatibility. It is built with Java 25, Javalin, FFmpeg, SQLite, and Maven.
 
