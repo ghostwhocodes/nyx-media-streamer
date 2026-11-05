@@ -1,23 +1,10 @@
 # Nyx Codex Instructions
 
-These instructions are for long-horizon Codex runs in this repository.
+These instructions are for Codex runs in this repository.
 
 ## Read Order
 
 Always read `AGENTS.md` first.
-
-For long-horizon tasks, prefer task-local documents under `ai/tasks/<task-slug>/`:
-
-1. `ai/tasks/<task-slug>/Prompt.md`
-2. `ai/tasks/<task-slug>/Contract.md`
-3. `ai/tasks/<task-slug>/Plan.md`
-4. `ai/tasks/<task-slug>/Implement.md`
-5. `ai/tasks/<task-slug>/Documentation.md`
-6. `ai/tasks/<task-slug>/Closeout.md`
-
-Treat task-local `Prompt.md` as the product spec, task-local `Contract.md` as the completion boundary, task-local `Plan.md` as advisory milestone decomposition, task-local `Implement.md` as the operating runbook, task-local `Documentation.md` as the live status log, and task-local `Closeout.md` as the structured closeout evidence the wrapper verifies before completion.
-
-Historical tasks under `ai/tasks/completed/` may still use the earlier four-file format. Treat those as archival records, not runnable tasks.
 
 ## Environment
 
@@ -25,7 +12,7 @@ Historical tasks under `ai/tasks/completed/` may still use the earlier four-file
 - Use `./codex/mvnw.sh ...` for Maven commands so the correct Java environment is loaded automatically.
 - If `./codex/mvnw.sh` fails to locate JDK 25, stop and fix the environment before making code changes.
 - Prefer the Maven wrapper over any system Maven installation.
-- For long-horizon Codex runs in this repository, default to `danger-full-access` sandbox mode. Maven validation in this project has proven unreliable under the standard sandbox.
+- For Codex runs in this repository, default to `danger-full-access` sandbox mode. Maven validation in this project has proven unreliable under the standard sandbox.
 
 ## Repo Shape
 
@@ -48,23 +35,14 @@ Historical tasks under `ai/tasks/completed/` may still use the earlier four-file
 - Preserve the old-client path covered by `QloudCompatibilityRoutesTest.legacyQloudClientContractBridgesTokensBrowsesFilePathAndStreamsTsThroughProxyHost`: bridged native hello/auth tokens, LAN-facing proxy host/port echoing, file-path `/proc/list` browse tolerance, and `NYX_QLOUD_LEGACY_TS_HLS=true` MPEG-TS HLS playback.
 - Keep compatibility fixes inside the Qloud shim where possible. Do not weaken normal Nyx APIs to match legacy Qloud behavior.
 
-## Long-Run Workflow
+## Workflow
 
-- Prefer creating one task directory per long-horizon effort under `ai/tasks/<task-slug>/`.
 - Work one milestone at a time, in the active task plan order.
 - Keep diffs scoped to the current milestone.
 - Run the milestone validation commands before moving on.
 - If validation fails, repair the failure before continuing.
-- Run contract-required validations through `./codex/run-task-command.sh --task <task-slug> --validation-id <id> -- <command>`.
-- Update the active task `Documentation.md` after every milestone with:
-  - status
-  - decisions made
-  - validation commands run
-  - failures encountered and repairs applied
-  - next milestone
-- Keep `Closeout.md` current once requirement, review, or handoff evidence changes.
 - Preserve compatibility behavior unless the spec explicitly changes it.
-- Do not rewrite completed milestones without a concrete reason recorded in the active task `Documentation.md`.
+- Do not rewrite completed milestones without a concrete reason.
 
 ## Validation Expectations
 
@@ -83,10 +61,10 @@ Historical tasks under `ai/tasks/completed/` may still use the earlier four-file
 
 ## Git Hygiene
 
-- Prefer running long-horizon work from a dedicated Git worktree or a clean branch.
+- Prefer running substantial work from a dedicated Git worktree or a clean branch.
 - If the working tree already contains unrelated edits, do not revert them.
-- If existing edits overlap with the current milestone, stop and record the conflict clearly in the active task `Documentation.md` before proceeding.
-- Do not run concurrent long-horizon or Maven validation workflows in the same checkout unless they are explicitly serialized behind a shared lock.
+- If existing edits overlap with the current milestone, stop and flag the conflict before proceeding.
+- Do not run concurrent Maven validation workflows in the same checkout unless they are explicitly serialized behind a shared lock.
 
 ## Stop Conditions
 
@@ -94,8 +72,8 @@ Stop only for a real blocker, such as:
 
 - required repository context is missing
 - the environment cannot run the required validation commands
-- the milestone cannot be completed without a product decision not covered by the active task `Prompt.md`
+- the milestone cannot be completed without a product decision not covered by the active spec
 
-Do not treat a task as complete until final validation, merge-readiness review, and `./codex/check-contract.py --task <task-slug>` have all passed.
+Do not treat a task as complete until final validation and review have passed.
 
-When stopped, record the blocker and the exact next action in the active task `Documentation.md`.
+When stopped, record the blocker and the exact next action.
